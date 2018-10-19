@@ -1,0 +1,43 @@
+language: cpp
+sudo: false
+
+matrix:
+  include:
+    # GCC5 on Linux Trusty
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5']
+      env: COMPILER='g++-5'
+    # Clang on OSX
+    - os: osx
+      osx_image: xcode10
+      compiler: clang
+      env: COMPILER='clang++'
+
+before_install:
+  # Install cmake
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get update;
+      sudo apt-get install --upgrade cmake;
+    elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      which cmake || brew install cmake;
+    fi
+  # Get logical CPU number
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      export CPU_NUM=`grep -c ^processor /proc/cpuinfo`;
+    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      export CPU_NUM=`sysctl -n hw.logicalcpu_max`;
+    fi
+
+install:
+
+before_script:
+
+script:
+  - export CXX=${COMPILER}
+  - cd ${TRAVIS_BUILD_DIR}
+  - make init
+  - make build BUILD_OPTIONS="-j $CPU_NUM"
