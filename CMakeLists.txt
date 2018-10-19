@@ -94,13 +94,13 @@ include_directories(
 set(NUKLEAR_ROOT "${CPPCISAMPLE_ROOT}/third_party/nuklear")
 include_directories(
   #${NUKLEAR_ROOT}
-  ${NUKLEAR_ROOT}/demo/glfw_opengl4
+  ${NUKLEAR_ROOT}/demo/glfw_opengl3
 )
 
 ## cppcisample
 
 add_executable(cppcisample
-  ${NUKLEAR_ROOT}/demo/glfw_opengl4/main.c
+  ${NUKLEAR_ROOT}/demo/glfw_opengl3/main.c
 )
 
 target_include_directories(cppcisample PUBLIC

@@ -1,6 +1,17 @@
 # Sample C++ Project with CI
 
+## Usage
 
+```bash
+git clone https://github.com/joinAero/CppCISample.git
+
+cd CppCISample/
+make build
+
+./_output/bin/cppcisample
+```
+
+`make help` to see more.
 
 ## Dependencies
 
