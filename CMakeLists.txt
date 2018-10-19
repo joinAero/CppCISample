@@ -25,15 +25,15 @@ configure_file(
 
 # flags
 
-if(MSVC OR MSYS OR MINGW)  # Win
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall")
+
+if(NOT HOST_OS STREQUAL "Win")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wextra")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
@@ -73,30 +73,75 @@ include_directories(
   ${CPPCISAMPLE_ROOT}/include
 )
 
-## imgui
+## opengl
 
-set(IMGUI_ROOT "${CPPCISAMPLE_ROOT}/third_party/imgui")
+#find_package(OpenGL REQUIRED)
+#status("OPENGL_INCLUDE_DIR: ${OPENGL_INCLUDE_DIR}")
+#status("OPENGL_LIBRARIES: ${OPENGL_LIBRARIES}")
 
-file(GLOB IMGUI_SRCS "third_party/imgui/*.cpp")
+## glfw3
 
-add_library(imgui STATIC ${IMGUI_SRCS})
+find_package(GLEW REQUIRED)
+#status("GLEW_INCLUDE_DIRS: ${GLEW_INCLUDE_DIRS}")
+#status("GLEW_LIBRARIES: ${GLEW_LIBRARIES}")
 
-target_include_directories(imgui PUBLIC
-  "$<BUILD_INTERFACE:${IMGUI_ROOT}>"
+include_directories(
+  ${GLEW_INCLUDE_DIRS}
+)
+
+## nuklear
+
+set(NUKLEAR_ROOT "${CPPCISAMPLE_ROOT}/third_party/nuklear")
+include_directories(
+  #${NUKLEAR_ROOT}
+  ${NUKLEAR_ROOT}/demo/glfw_opengl4
 )
 
 ## cppcisample
 
 add_executable(cppcisample
-  src/cppcisample/main.cpp
+  ${NUKLEAR_ROOT}/demo/glfw_opengl4/main.c
 )
 
-target_include_directories(imgui PUBLIC
+target_include_directories(cppcisample PUBLIC
   "$<BUILD_INTERFACE:${CPPCISAMPLE_ROOT}/src>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src>"
 )
 
-target_link_libraries(cppcisample imgui)
+#target_link_libraries(cppcisample OpenGL::GL GLEW::GLEW)
+
+if(HOST_OS STREQUAL "Win")
+  target_link_libraries(cppcisample
+    -lglfw3 -lopengl32 -lm -lGLU32 -lGLEW32
+  )
+else()
+  execute_process(COMMAND pkg-config --libs glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE GLFW3)
+  #status("GLFW3: ${GLFW3}")
+  if(HOST_OS STREQUAL "Mac")
+    target_link_libraries(cppcisample
+      ${GLFW3} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -lm -lGLEW -L/usr/local/lib
+    )
+  else()
+    target_link_libraries(cppcisample
+      ${GLFW3} -lGL -lm -lGLU -lGLEW
+    )
+  endif()
+endif()
+
+# install
+
+set(CPPCISAMPLE_CMAKE_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/${CPPCISAMPLE_NAME}")
+set(CPPCISAMPLE_CMAKE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
+set(CPPCISAMPLE_CMAKE_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib")
+set(CPPCISAMPLE_CMAKE_INSTALLDIR "${CPPCISAMPLE_CMAKE_LIBDIR}/cmake/${CPPCISAMPLE_NAME}")
+
+install(TARGETS cppcisample
+  #EXPORT cppcisample-targets
+  #PUBLIC_HEADER DESTINATION ${CPPCISAMPLE_CMAKE_INCLUDE_DIR}
+  ARCHIVE DESTINATION ${CPPCISAMPLE_CMAKE_LIBDIR}
+  LIBRARY DESTINATION ${CPPCISAMPLE_CMAKE_LIBDIR}
+  RUNTIME DESTINATION ${CPPCISAMPLE_CMAKE_BINDIR}
+)
 
 # summary
 
