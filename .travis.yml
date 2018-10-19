@@ -9,10 +9,10 @@ matrix:
       addons:
         apt:
           sources: ['ubuntu-toolchain-r-test']
+          # https://github.com/glfw/glfw/blob/master/.travis.yml
           packages:
             - cmake
             - g++-5
-            # https://github.com/glfw/glfw/blob/master/.travis.yml
             - libxrandr-dev
             - libxinerama-dev
             - libxcursor-dev
@@ -40,9 +40,9 @@ before_install:
     fi
 
 install:
+  # On Trusty, please install glfw3 from source
+  #   E: Unable to locate package libglfw3-dev
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      # On Trusty, please install glfw3 from source
-      #   E: Unable to locate package libglfw3-dev
       wget https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.zip;
       unzip glfw-3.2.1.zip && cd glfw-3.2.1;
       cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON;
