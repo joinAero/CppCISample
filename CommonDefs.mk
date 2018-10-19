@@ -105,14 +105,14 @@ FIND := $(shell ./scripts/getfind.sh)
 
 ifeq ($(HOST_OS),Win)
   ifeq ($(HOST_NAME),MinGW)
-    CC := x86_64-w64-mingw32-gcc
-    CXX := x86_64-w64-mingw32-g++
+    CC ?= x86_64-w64-mingw32-gcc
+    CXX ?= x86_64-w64-mingw32-g++
     MAKE := mingw32-make
     BUILD := $(MAKE) $(BUILD_OPTIONS)
     INSTALL := $(MAKE) install
   else
-    CC := cl
-    CXX := cl
+    CC ?= cl
+    CXX ?= cl
     MAKE := make
     BUILD := msbuild.exe ALL_BUILD.vcxproj /property:Configuration=Release
     INSTALL := msbuild.exe INSTALL.vcxproj /property:Configuration=Release
@@ -120,8 +120,8 @@ ifeq ($(HOST_OS),Win)
 else
   # mac & linux
   # Set realpath for linux because of compiler not found with wrong path when cmake again
-  CC := /usr/bin/cc
-  CXX := /usr/bin/c++
+  CC ?= /usr/bin/cc
+  CXX ?= /usr/bin/c++
   MAKE := make
   BUILD := $(MAKE) $(BUILD_OPTIONS)
   INSTALL := $(MAKE) install

@@ -17,7 +17,10 @@ _echo_s "Init deps"
 # glfw: https://github.com/glfw/glfw
 
 if [ "$HOST_OS" = "Linux" ]; then
-  _install_deps "$SUDO apt-get install" libglfw3-dev libglew-dev
+  # On Trusty, please install glfw3 from source
+  #   E: Unable to locate package libglfw3-dev
+  _install_deps "$SUDO apt-get install" libglfw3-dev
+  _install_deps "$SUDO apt-get install" libglew-dev
 elif [ "$HOST_OS" = "Mac" ]; then
   _install_deps "brew install" glfw3 glew
 elif [ "$HOST_OS" = "Win" ]; then
