@@ -10,6 +10,7 @@ include CommonDefs.mk
 help:
 	@echo "Usage:"
 	@echo "  make help            show help message"
+	@echo "  make init            init project"
 	@echo "  make build           build project"
 	@echo "  make install         install project"
 	@echo "  make clean|cleanall  clean project"
@@ -26,13 +27,19 @@ help:
 submodules:
 	@git submodule update --init
 
-third_party: submodules
+.PHONY: submodules
 
-.PHONY: submodules third_party
+# init
+
+init: submodules
+	@$(call echo,Make $@)
+	@$(SH) ./scripts/init.sh
+
+.PHONY: init
 
 # build
 
-build: third_party
+build:
 	@$(call echo,Make $@)
 	@$(call cmake_build,./_build,..,-DCMAKE_INSTALL_PREFIX=$(MKFILE_DIR)/_install)
 

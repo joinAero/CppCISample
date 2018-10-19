@@ -145,7 +145,7 @@ if(HOST_OS STREQUAL "Mac")
   )
 endif()
 
-if(MINGW)
+if(MINGW)  # MSYS2/MINGW
   execute_process(COMMAND pkg-config --cflags glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_cflags)
   target_compile_options(imgui_demo PUBLIC ${_glfw3_cflags})
 
@@ -200,7 +200,7 @@ set(CPPCISAMPLE_CMAKE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
 set(CPPCISAMPLE_CMAKE_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(CPPCISAMPLE_CMAKE_INSTALLDIR "${CPPCISAMPLE_CMAKE_LIBDIR}/cmake/${CPPCISAMPLE_NAME}")
 
-install(TARGETS nuklear_demo
+install(TARGETS imgui_demo nuklear_demo
   #EXPORT cppcisample-targets
   #PUBLIC_HEADER DESTINATION ${CPPCISAMPLE_CMAKE_INCLUDE_DIR}
   ARCHIVE DESTINATION ${CPPCISAMPLE_CMAKE_LIBDIR}
