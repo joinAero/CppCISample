@@ -8,18 +8,19 @@ git clone https://github.com/joinAero/CppCISample.git
 cd CppCISample/
 make build
 
-./_output/bin/cppcisample
+./_output/bin/imgui_demo
+./_output/bin/nuklear_demo
 ```
 
 `make help` to see more.
 
 ## Dependencies
 
+* [imgui](https://github.com/ocornut/imgui), v1.65
 * [Nuklear](https://github.com/vurtun/nuklear), 4.00.1
 
 <!--
 * [glfw](https://github.com/glfw/glfw), 3.2.1
-* [imgui](https://github.com/ocornut/imgui), v1.65
 
 * [imgui-glfw](https://github.com/aimotive/imgui-glfw)
 * [imgui-glfw](https://github.com/urddru/imgui-glfw)
