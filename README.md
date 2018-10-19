@@ -1,5 +1,9 @@
 # Sample C++ Project with CI
 
+| Linux/macOS | Windows |
+| ----------- | ------- |
+| [![Build Status](https://travis-ci.com/joinAero/CppCISample.svg?branch=master)](https://travis-ci.com/joinAero/CppCISample) | ? |
+
 ## Usage
 
 ```bash
@@ -22,12 +26,16 @@ make build
 
 ## References
 
-Articles:
+*Articles:*
 
 * [GitHub welcomes all CI tools](https://blog.github.com/2017-11-07-github-welcomes-all-ci-tools/)
 * [Travis CI - Building a C++ Project](https://docs.travis-ci.com/user/languages/cpp/)
 * [AppVeyor - Building C/C++ projects](https://www.appveyor.com/docs/lang/cpp/)
 
-Samples:
+*Samples:*
 
 * [ModernCppCI](https://github.com/LearningByExample/ModernCppCI)
+
+## License
+
+The project is [Apache License, Version 2.0](/LICENSE) licensed.
