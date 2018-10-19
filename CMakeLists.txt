@@ -124,10 +124,10 @@ target_include_directories(imgui_demo PUBLIC
 target_link_libraries(imgui_demo imgui)
 
 if(HOST_OS STREQUAL "Linux")
-  execute_process(COMMAND pkg-config --cflags glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_cflags)
+  execute_process(COMMAND pkg-config --cflags glfw3 OUTPUT_VARIABLE _glfw3_cflags OUTPUT_STRIP_TRAILING_WHITESPACE)
   target_compile_options(imgui_demo PUBLIC ${_glfw3_cflags})
 
-  execute_process(COMMAND pkg-config --static --libs glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_libs)
+  execute_process(COMMAND pkg-config --static --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
   target_link_libraries(imgui_demo -lGL ${_glfw3_libs})
 
   unset(_glfw3_cflags)
@@ -139,7 +139,7 @@ if(HOST_OS STREQUAL "Mac")
     "$<BUILD_INTERFACE:/usr/local/include>"
   )
 
-  execute_process(COMMAND pkg-config --libs glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_libs)
+  execute_process(COMMAND pkg-config --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
   target_link_libraries(imgui_demo
     ${_glfw3_libs} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -L/usr/local/lib
   )
@@ -147,7 +147,7 @@ if(HOST_OS STREQUAL "Mac")
 endif()
 
 if(MINGW)  # MSYS2/MINGW
-  execute_process(COMMAND pkg-config --cflags glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_cflags)
+  execute_process(COMMAND pkg-config --cflags glfw3 OUTPUT_VARIABLE _glfw3_cflags OUTPUT_STRIP_TRAILING_WHITESPACE)
   target_compile_options(imgui_demo PUBLIC ${_glfw3_cflags})
 
   target_link_libraries(imgui_demo
@@ -181,7 +181,7 @@ if(HOST_OS STREQUAL "Win")
     -lglfw3 -lopengl32 -lm -lGLU32 -lGLEW32
   )
 else()
-  execute_process(COMMAND pkg-config --libs glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_libs)
+  execute_process(COMMAND pkg-config --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(HOST_OS STREQUAL "Mac")
     target_link_libraries(nuklear_demo
       ${_glfw3_libs} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -lm -lGLEW -L/usr/local/lib

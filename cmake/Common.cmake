@@ -17,7 +17,7 @@ endif()
 
 set(HOST_NAME "${HOST_OS}")
 if(HOST_OS STREQUAL "Linux")
-  execute_process(COMMAND uname -a COMMAND tr -d '\n' OUTPUT_VARIABLE UNAME_A)
+  execute_process(COMMAND uname -a OUTPUT_VARIABLE UNAME_A OUTPUT_STRIP_TRAILING_WHITESPACE)
   string(TOLOWER "${UNAME_A}" UNAME_A)
   if(${UNAME_A} MATCHES ".*(tegra|jetsonbot).*")
     set(HOST_NAME Tegra)
