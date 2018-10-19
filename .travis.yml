@@ -56,4 +56,4 @@ script:
   - export CXX=${COMPILER}
   - cd ${TRAVIS_BUILD_DIR}
   - make init
-  - make build BUILD_OPTIONS="-j $CPU_NUM"
+  - make install BUILD_OPTIONS="-j $CPU_NUM"
