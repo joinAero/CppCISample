@@ -139,10 +139,11 @@ if(HOST_OS STREQUAL "Mac")
     "$<BUILD_INTERFACE:/usr/local/include>"
   )
 
+  execute_process(COMMAND pkg-config --libs glfw3 COMMAND tr -d '\n' OUTPUT_VARIABLE _glfw3_libs)
   target_link_libraries(imgui_demo
-    "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo"
-    -L/usr/local/lib -lglfw3
+    ${_glfw3_libs} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -L/usr/local/lib
   )
+  unset(_glfw3_libs)
 endif()
 
 if(MINGW)  # MSYS2/MINGW

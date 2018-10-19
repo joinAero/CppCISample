@@ -17,9 +17,9 @@ _echo_s "Init deps"
 # glfw: https://github.com/glfw/glfw
 
 if [ "$HOST_OS" = "Linux" ]; then
-  _install_deps "$SUDO apt-get install" libglfw-dev
+  _install_deps "$SUDO apt-get install" libglfw3-dev libglew-dev
 elif [ "$HOST_OS" = "Mac" ]; then
-  _install_deps "brew install" glfw3
+  _install_deps "brew install" glfw3 glew
 elif [ "$HOST_OS" = "Win" ]; then
   if [ "$HOST_NAME" = "MINGW" ]; then
     if [ "$HOST_ARCH" = "x64" ]; then
