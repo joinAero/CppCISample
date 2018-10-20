@@ -63,6 +63,11 @@ endmacro()
 
 # targets
 
+set(CPPCISAMPLE_CMAKE_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/${CPPCISAMPLE_NAME}")
+set(CPPCISAMPLE_CMAKE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
+set(CPPCISAMPLE_CMAKE_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib")
+set(CPPCISAMPLE_CMAKE_INSTALLDIR "${CPPCISAMPLE_CMAKE_LIBDIR}/cmake/${CPPCISAMPLE_NAME}")
+
 set_outdir(
   ARCHIVE "${CPPCISAMPLE_OUTPUT}/lib"
   LIBRARY "${CPPCISAMPLE_OUTPUT}/lib"
@@ -79,135 +84,20 @@ include_directories(
 #status("OPENGL_INCLUDE_DIR: ${OPENGL_INCLUDE_DIR}")
 #status("OPENGL_LIBRARIES: ${OPENGL_LIBRARIES}")
 
-## glew
-
-find_package(GLEW REQUIRED)
-#status("GLEW_INCLUDE_DIRS: ${GLEW_INCLUDE_DIRS}")
-#status("GLEW_LIBRARIES: ${GLEW_LIBRARIES}")
-
-include_directories(
-  ${GLEW_INCLUDE_DIRS}
-)
-
-## imgui
-
-set(IMGUI_ROOT "${CPPCISAMPLE_ROOT}/third_party/imgui")
-
-file(GLOB IMGUI_SRCS "third_party/imgui/*.cpp")
-#${IMGUI_ROOT}/imgui.cpp
-#${IMGUI_ROOT}/imgui_demo.cpp
-#${IMGUI_ROOT}/imgui_draw.cpp
-#${IMGUI_ROOT}/imgui_widgets.cpp
-
-add_library(imgui STATIC ${IMGUI_SRCS})
-
-target_include_directories(imgui PUBLIC
-  "$<BUILD_INTERFACE:${IMGUI_ROOT}>"
-)
-
-## imgui_demo
-
-add_executable(imgui_demo
-  ${IMGUI_ROOT}/examples/imgui_impl_glfw.cpp
-  ${IMGUI_ROOT}/examples/imgui_impl_opengl3.cpp
-  ${IMGUI_ROOT}/examples/libs/gl3w/GL/gl3w.c
-  ${IMGUI_ROOT}/examples/example_glfw_opengl3/main.cpp
-)
-
-target_include_directories(imgui_demo PUBLIC
-  "$<BUILD_INTERFACE:${CPPCISAMPLE_ROOT}/src>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src>"
-  "$<BUILD_INTERFACE:${IMGUI_ROOT}/examples>"
-  "$<BUILD_INTERFACE:${IMGUI_ROOT}/examples/libs/gl3w>"
-)
-
-target_link_libraries(imgui_demo imgui)
-
-if(HOST_OS STREQUAL "Linux")
-  execute_process(COMMAND pkg-config --cflags glfw3 OUTPUT_VARIABLE _glfw3_cflags OUTPUT_STRIP_TRAILING_WHITESPACE)
-  target_compile_options(imgui_demo PUBLIC ${_glfw3_cflags})
-
-  execute_process(COMMAND pkg-config --static --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
-  target_link_libraries(imgui_demo -lGL ${_glfw3_libs})
-
-  unset(_glfw3_cflags)
-  unset(_glfw3_libs)
-endif()
-
-if(HOST_OS STREQUAL "Mac")
-  target_include_directories(imgui_demo PUBLIC
-    "$<BUILD_INTERFACE:/usr/local/include>"
-  )
-
-  execute_process(COMMAND pkg-config --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
-  target_link_libraries(imgui_demo
-    ${_glfw3_libs} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -L/usr/local/lib
-  )
-  unset(_glfw3_libs)
-endif()
-
-if(MINGW)  # MSYS2/MINGW
-  execute_process(COMMAND pkg-config --cflags glfw3 OUTPUT_VARIABLE _glfw3_cflags OUTPUT_STRIP_TRAILING_WHITESPACE)
-  target_compile_options(imgui_demo PUBLIC ${_glfw3_cflags})
-
-  target_link_libraries(imgui_demo
-    -lglfw3 -lgdi32 -lopengl32 -limm32
-  )
-
-  unset(_glfw3_cflags)
-endif()
-
-## nuklear
-
-set(NUKLEAR_ROOT "${CPPCISAMPLE_ROOT}/third_party/nuklear")
-#include_directories(${NUKLEAR_ROOT})
-
-## nuklear_demo
-
-add_executable(nuklear_demo
-  ${NUKLEAR_ROOT}/demo/glfw_opengl3/main.c
-)
-
-target_include_directories(nuklear_demo PUBLIC
-  "$<BUILD_INTERFACE:${CPPCISAMPLE_ROOT}/src>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src>"
-  "$<BUILD_INTERFACE:${NUKLEAR_ROOT}/demo/glfw_opengl3>"
-)
-
-#target_link_libraries(nuklear_demo OpenGL::GL GLEW::GLEW)
+## demos
 
 if(HOST_OS STREQUAL "Win")
-  target_link_libraries(nuklear_demo
-    -lglfw3 -lopengl32 -lm -lGLU32 -lGLEW32
-  )
-else()
-  execute_process(COMMAND pkg-config --libs glfw3 OUTPUT_VARIABLE _glfw3_libs OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(HOST_OS STREQUAL "Mac")
-    target_link_libraries(nuklear_demo
-      ${_glfw3_libs} "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo" -lm -lGLEW -L/usr/local/lib
-    )
+  if(MSVC)
+    add_subdirectory(src/nukleardemo)
+  elseif(MINGW)
+    add_subdirectory(src/imguidemo)
   else()
-    target_link_libraries(nuklear_demo
-      ${_glfw3_libs} -lGL -lm -lGLU -lGLEW
-    )
+    message(WARNING "There are no demos on this Windows platform.")
   endif()
-  unset(_glfw3_libs)
+else()
+  add_subdirectory(src/imguidemo)
+  add_subdirectory(src/nukleardemo)
 endif()
-
-# install
-
-set(CPPCISAMPLE_CMAKE_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include/${CPPCISAMPLE_NAME}")
-set(CPPCISAMPLE_CMAKE_BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-set(CPPCISAMPLE_CMAKE_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib")
-set(CPPCISAMPLE_CMAKE_INSTALLDIR "${CPPCISAMPLE_CMAKE_LIBDIR}/cmake/${CPPCISAMPLE_NAME}")
-
-install(TARGETS imgui_demo nuklear_demo
-  #EXPORT cppcisample-targets
-  #PUBLIC_HEADER DESTINATION ${CPPCISAMPLE_CMAKE_INCLUDE_DIR}
-  ARCHIVE DESTINATION ${CPPCISAMPLE_CMAKE_LIBDIR}
-  LIBRARY DESTINATION ${CPPCISAMPLE_CMAKE_LIBDIR}
-  RUNTIME DESTINATION ${CPPCISAMPLE_CMAKE_BINDIR}
-)
 
 # summary
 
