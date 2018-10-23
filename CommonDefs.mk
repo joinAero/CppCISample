@@ -17,6 +17,8 @@ CLOSE_PAREN := )
 
 # Host detection
 
+ifeq ($(HOST_OS),)
+
 ifeq ($(OS),Windows_NT)
 
 HOST_OS := Win
@@ -33,7 +35,7 @@ else
   endif
 endif
 
-else
+else  # OS
 
 UNAME_S := $(shell uname -s)
 ifneq ($(findstring Linux,$(UNAME_S)),)
@@ -66,7 +68,11 @@ else
   DUMMY := $(error "Can't detect host arch")
 endif
 
-endif
+endif  # OS
+
+endif  # HOST_OS
+
+ifeq ($(HOST_NAME),)
 
 HOST_NAME := $(HOST_OS)
 ifeq ($(HOST_OS),Win)
@@ -91,6 +97,8 @@ else ifeq ($(HOST_OS),Linux)
   endif
 endif
 
+endif  # HOST_NAME
+
 # Function
 
 mkinfo = $(info + $1)
@@ -101,7 +109,9 @@ lower = $(shell echo $1 | tr '[:upper:]' '[:lower:]')
 
 SH := $(SHELL)
 ECHO := echo -e
-FIND := $(shell ./scripts/getfind.sh)
+ifeq ($(FIND),)
+  FIND := $(shell ./scripts/getfind.sh)
+endif
 
 ifeq ($(HOST_OS),Win)
   ifeq ($(HOST_NAME),MinGW)

@@ -119,12 +119,11 @@ elif [ "$HOST_OS" = "Win" ]; then
   if [ -n "${_INIT_LINTER_}" ]; then
     _install_deps "pacman -S" clang-format
   fi
-  # update
-  #   pacman -Syu
-  # search
-  #   pacman -Ss make
-  # autoremove
-  #   pacman -Qtdq | pacman -Rs -
+  # update: pacman -Syu
+  # search: pacman -Ss make
+  # remove unused: pacman -Rns $(pacman -Qtdq)
+  # remove cache: pacman -Sc
+  # https://wiki.archlinux.org/index.php/Pacman/Tips_and_tricks
 else  # unexpected
   _echo_e "Unknown host os :("
   exit 1

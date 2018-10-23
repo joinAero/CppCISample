@@ -1,0 +1,82 @@
+# http://www.appveyor.com/docs/appveyor-yml
+
+# general
+
+version: '{build}'
+
+branches:
+  only:
+    - master
+
+skip_tags: true
+
+# environment
+
+# https://www.appveyor.com/docs/build-environment/#build-worker-images
+image: Visual Studio 2017
+
+init:
+- ps: |
+    $startTime = (Get-Date)
+    echo "Script started on $startTime"
+
+clone_folder: c:\projects\CppCISample
+
+clone_depth: 5
+
+environment:
+  matrix:
+    - COMPILER: MinGW-w64
+      PLATFORM: x64
+      MINGW_ROOT: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1
+      MSYS2_ROOT: C:\msys64
+
+install:
+- ps: |
+    cd $env:APPVEYOR_BUILD_FOLDER
+    git submodule update --init --recursive
+
+    if ($env:COMPILER -eq "MinGW-w64") {
+      # $env:path = $env:path.replace("C:\Program Files\Git\usr\bin;", "")
+      $env:path += ";$env:MINGW_ROOT\mingw64\bin"
+      $env:path += ";$env:MSYS2_ROOT\usr\bin"
+      echo "path: $env:path"
+
+      pacman --noconfirm -S mingw-w64-x86_64-glfw
+    }
+
+# build
+
+configuration: Release
+
+before_build:
+
+build_script:
+- ps: |
+    md _build -Force | Out-Null
+    cd _build
+
+    if ($env:COMPILER -eq "MinGW-w64") {
+      cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=$env:configuration ..
+      cmake --build . --config $env:configuration -- -j2
+    }
+
+# global handlers
+
+on_success:
+- ps: |
+    echo Script completed successfuly
+
+on_failure:
+- ps: |
+    echo "Script Failed"
+
+on_finish:
+- ps: |
+    $endTime  = (Get-Date)
+    echo "Ended on $endTime"
+    ($endTime-$startTime).ToString('''Execution time: ''mm'' min ''ss'' sec''')
+
+# References:
+#   https://github.com/google/googletest/blob/master/appveyor.yml
+#   https://github.com/symengine/symengine/blob/master/appveyor.yml
