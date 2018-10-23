@@ -2,7 +2,7 @@
 
 | Linux/macOS | Windows |
 | ----------- | ------- |
-| [![Build Status](https://travis-ci.com/joinAero/CppCISample.svg?branch=master)](https://travis-ci.com/joinAero/CppCISample) | ? |
+| [![Build Status](https://travis-ci.com/joinAero/CppCISample.svg?branch=master)](https://travis-ci.com/joinAero/CppCISample) | [![Build status](https://ci.appveyor.com/api/projects/status/ngxl218bjykacn3m?svg=true)](https://ci.appveyor.com/project/joinAero/cppcisample) |
 
 ## Usage
 
