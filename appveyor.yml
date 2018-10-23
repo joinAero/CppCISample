@@ -28,22 +28,24 @@ environment:
   matrix:
     - COMPILER: MinGW-w64
       PLATFORM: x64
-      MINGW_ROOT: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1
       MSYS2_ROOT: C:\msys64
+      #MINGW_ROOT: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1
 
+# git clone with submodules
+#   https://github.com/appveyor/ci/issues/899
 install:
-- ps: |
-    cd $env:APPVEYOR_BUILD_FOLDER
-    git submodule update --init --recursive
+  # git bash conflicts with MinGW makefiles
+  - set MY_PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - echo MY_PATH=%MY_PATH%
+  - git --version
 
-    if ($env:COMPILER -eq "MinGW-w64") {
-      # $env:path = $env:path.replace("C:\Program Files\Git\usr\bin;", "")
-      $env:path += ";$env:MINGW_ROOT\mingw64\bin"
-      $env:path += ";$env:MSYS2_ROOT\usr\bin"
-      echo "path: $env:path"
+  - if [%COMPILER%]==[MinGW-w64] set PATH=%MSYS2_ROOT%\usr\bin;%MY_PATH%
+  - if [%COMPILER%]==[MinGW-w64] bash -lc "pacman --needed --noconfirm -Syu"
+  - if [%COMPILER%]==[MinGW-w64] bash -lc "pacman --needed --noconfirm -Sy"
+  - if [%COMPILER%]==[MinGW-w64] bash -lc "pacman --noconfirm -S mingw-w64-x86_64-glfw"
+  - if [%COMPILER%]==[MinGW-w64] set PATH=%MSYS2_ROOT%\mingw64\bin;%MY_PATH%
 
-      pacman --noconfirm -S mingw-w64-x86_64-glfw
-    }
+  - git submodule update --init --recursive
 
 # build
 
@@ -52,14 +54,11 @@ configuration: Release
 before_build:
 
 build_script:
-- ps: |
-    md _build -Force | Out-Null
-    cd _build
+  - mkdir _build
+  - cd _build
 
-    if ($env:COMPILER -eq "MinGW-w64") {
-      cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=$env:configuration ..
-      cmake --build . --config $env:configuration -- -j2
-    }
+  - if [%COMPILER%]==[MinGW-w64] cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=$env:configuration ..
+  - if [%COMPILER%]==[MinGW-w64] cmake --build . --config $env:configuration -- -j2
 
 # global handlers
 
@@ -80,3 +79,4 @@ on_finish:
 # References:
 #   https://github.com/google/googletest/blob/master/appveyor.yml
 #   https://github.com/symengine/symengine/blob/master/appveyor.yml
+#   https://github.com/johnkerl/miller/blob/master/appveyor.yml
