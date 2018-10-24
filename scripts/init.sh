@@ -5,6 +5,7 @@
 # _VERBOSE_=1
 # _INIT_LINTER_=1
 # _FORCE_INSRALL_=1
+_INSTALL_OPTIONS_=$@
 
 BASE_DIR=$(cd "$(dirname "$0")" && pwd)
 ROOT_DIR=$(realpath "$BASE_DIR/..")

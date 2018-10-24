@@ -27,10 +27,10 @@ matrix:
 before_install:
   # Install cmake
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo apt-get update;
-      sudo apt-get install --upgrade cmake;
+      # sudo apt-get update;
+      sudo apt-get install -y --upgrade cmake;
     elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      which cmake || brew install cmake;
+      which cmake || brew install -y cmake;
     fi
   # Get logical CPU number
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
