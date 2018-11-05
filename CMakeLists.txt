@@ -6,6 +6,10 @@ project(cppcisample VERSION 1.0.0 LANGUAGES C CXX)
 
 include(cmake/Common.cmake)
 
+if(NOT CMAKE_DEBUG_POSTFIX)
+  set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
 # config
 
 set(CPPCISAMPLE_NAME "${PROJECT_NAME}")
